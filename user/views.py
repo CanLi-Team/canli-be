@@ -194,4 +194,16 @@ class VerifyOTP(APIView):
             return Response({"error": "Something went wrong"}, status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
+class UserFeedbackAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request):
+        try:
+            user = request.user
+            feedback = request.data.get("feedback", None)
+            if feedback is None or feedback == "":
+                return Response({"error": "Please fill the feedback."}, status.HTTP_422_UNPROCESSABLE_ENTITY)
+            user_feedback = UserFeedback.objects.create(user = user, feedback = feedback)
+            return Response({"response": "Feedback submitted successfully"}, status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": "something went wrong."}, status.HTTP_400_BAD_REQUEST)
