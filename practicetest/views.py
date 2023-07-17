@@ -25,3 +25,23 @@ class FetchQuestionAPIView(APIView):
         except Exception as e:
             print(e)
             return Response({"error":"something went wrong"}, status.HTTP_400_BAD_REQUEST)
+        
+
+class BookmarkQuestionAPIView(APIView):
+	permission_classes = [IsAuthenticated]
+	serializer_classes = []
+
+	def get(self, request):
+		try:
+			user = request.user
+			context = {"user_id": user.id}
+			user_practices = UserPractice.objects.filter(is_bookmarked = True, user = user)
+			practice_test = []
+			if user_practices:
+				for user_practice in user_practices:
+					if user_practice.practice_test.question_type != "note":
+						practice_test.append(user_practice.practice_test)
+			return Response({"response":PracticeTestSerializer(practice_test, context = context, many = True).data}, status.HTTP_200_OK)
+		except Exception as e:
+			print(e)
+			return Response({"error":"something went wrong"}, status.HTTP_400_BAD_REQUEST)
