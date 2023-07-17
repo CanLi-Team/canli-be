@@ -219,6 +219,8 @@ class AddTestDate(APIView):
             test_date = request.data.get('test_date', None)
             if test_date is None or test_date == "":
                 return Response({"error": "Please select the test date."}, status.HTTP_422_UNPROCESSABLE_ENTITY)
+            user.test_date = test_date
+            user.save()
             return Response({"response": "TestDate submitted successfully"}, status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"error": "something went wrong."}, status.HTTP_400_BAD_REQUEST)
