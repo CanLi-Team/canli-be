@@ -15,4 +15,5 @@ urlpatterns = [
     path('re_generate_otp', views.GenerateOTP.as_view(), name='re-generate-otp'),
     path('verify_otp', views.VerifyOTP.as_view(), name='verify-otp'),
     path('add/feedback', views.UserFeedbackAPIView.as_view(), name='user-feedback'),
+    path('add/test_date', views.AddTestDate.as_view(), name='add-testdate'),
 ]
