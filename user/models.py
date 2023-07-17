@@ -177,31 +177,24 @@ class OTPVerification(models.Model):
     class Meta:
         ordering = ["-id"]
 
-    # def send_otp(self):
-    #     expiry_time = datetime.now() + timedelta(minutes=10)
-    #     otp = random.randrange(99999, 999999, 12)
-    #     self.otp = otp
-    #     self.otp_validity = expiry_time
-    #     self.save()
+    def send_otp(self):
+        expiry_time = datetime.now() + timedelta(minutes=10)
+        otp = random.randrange(99999, 999999, 12)
+        self.otp = otp
+        self.otp_validity = expiry_time
+        self.save()
+        print(f"179-----", otp)
+        send_email_verify_otp(otp, [self.otp_to])
+        return True
 
-    #     if self.otp_type == "mobile":
-    #         OTP_SUFFIX = OTP_MESSAGES["OTP_SUFFIX"]
-    #         OTP_PREFIX = OTP_MESSAGES["SIGN_UP_MSG"]
-    #         message = OTP_MESSAGES["PASSCODE"] % {"otp": f"{self.otp}"}
-    #         Notification.send_message(full_contact_number=self.otp_to, message=message)
-
-    #     if self.otp_type == "email":
-    #         send_email_verify_otp(otp, [self.otp_to])
-    #     return True
-
-    # def validate_otp(self, otp_to, otp):
-    #     valid = (self.otp == int(otp) and self.otp_validity >= utc.localize(datetime.now())) and self.otp_to == otp_to
-    #     if settings.SYS_ENV != 'PROD' and not valid:
-    #         if otp in self.CHEAT_OTP:
-    #             valid = True
-    #     if valid:
-    #         self.delete()
-    #     return valid
+    def validate_otp(self, otp_to, otp):
+        valid = (self.otp == int(otp) and self.otp_validity >= utc.localize(datetime.now())) and self.otp_to == otp_to
+        if settings.SYS_ENV != 'PROD' and not valid:
+            if otp in self.CHEAT_OTP:
+                valid = True
+        if valid:
+            self.delete()
+        return valid
 
 
 class UserFeedback(models.Model):
