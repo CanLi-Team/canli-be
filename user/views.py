@@ -64,27 +64,29 @@ class GenerateOTP(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        full_name = request.data.get("full_name", None)
-        email = request.data.get("email", None)
+        try:
+            full_name = request.data.get("full_name", None)
+            email = request.data.get("email", None)
 
-        if not email:
-            return Response({"error": "Please Enter Email"}, status.HTTP_422_UNPROCESSABLE_ENTITY)
+            if not email:
+                return Response({"error": "Please Enter Email"}, status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        if full_name is None:
-            user = User.objects.filter(email = email)
-            if user:
-                pass
+            if full_name is None:
+                user = User.objects.filter(email = email)
+                if user:
+                    pass
+                else:
+                    return Response({"message": "Please make sign up."}, status.HTTP_422_UNPROCESSABLE_ENTITY)
+            elif email:
+                otp_to = f"{email}"
+                otp_verification = OTPVerification.objects.get_or_create(otp_to=otp_to)[0]
+                otp_verification.send_otp()
+                return Response({"message": "OTP is sent to your Email", "otp_verification_id": otp_verification.id}, status.HTTP_200_OK)
             else:
-                return Response({"message": "Please make sign up."}, status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-        elif email:
-            otp_to = f"{email}"
-            otp_verification = OTPVerification.objects.get_or_create(otp_to=otp_to, otp_type='email')[0]
-            otp_verification.send_otp()
-            return Response({"message": "OTP is sent to your Email", "otp_verification_id": otp_verification.id}, status.HTTP_200_OK)
-        else:
-            return Response({"error": "Please Enter Email or contact number"}, status.HTTP_422_UNPROCESSABLE_ENTITY)
-
+                return Response({"error": "Please Enter Email or contact number"}, status.HTTP_422_UNPROCESSABLE_ENTITY)
+        except Exception as e:
+            print(e)
+            return Response({"error": "something went wrong."}, status.HTTP_400_BAD_REQUEST)
 
 class VerifyOTP(APIView):
     """End point To Verify the OTP. Send (contact_number and country_code[country_code: srt]) or email and otp in parameters"""
