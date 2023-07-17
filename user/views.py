@@ -11,6 +11,23 @@ from user.serializers import *
 
 utc = pytz.UTC
 # Create your views here.
+class EditProfile(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_classes = [UserSimpleSerializer]
+
+    def post(self, request):
+        try:
+            user = request.user
+            user.full_name = request.data.get('full_name', None)
+            user.dob = request.data.get('dob', None)
+            user.gender = request.data.get('gender', None)
+            user.location_city = request.data.get('location_city', None)
+            user.save()
+            return Response({"response":"user profile updated successfully."}, status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"error": "something went wrong."}, status.HTTP_400_BAD_REQUEST)
+            
 class UserViewSet(viewsets.ModelViewSet):
 	''' Create new user. while creating the user send only the required parameters.
 	update user profile. access to admin for destroying the user. '''
