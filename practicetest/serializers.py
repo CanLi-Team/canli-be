@@ -11,3 +11,6 @@ class PracticeTestSerializer(ModelSerializer):
 	class Meta:
 		model = PracticeTest
 		fields = ('id','test_type','question_type','question','option','answer','content','created_at','updated_at', 'is_bookmarked', 'is_challanged')
+
+def get_content(self, obj):
+		return UploadContentSerializer(obj.content).data
