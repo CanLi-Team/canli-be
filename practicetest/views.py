@@ -65,3 +65,49 @@ class BookmarkQuestionAPIView(APIView):
 		except Exception as e:
 			print(e)
 			return Response({"error":"something went wrong"}, status.HTTP_400_BAD_REQUEST)
+
+
+class ChallangeQuestionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_classes = []
+
+    def post(self, request):
+        try:
+            practice_test_id = request.data.get("question_id", None)
+            is_challanged = request.data.get("is_challanged", None)
+            if practice_test_id:
+                user = request.user
+                questions = PracticeTest.objects.get(id=practice_test_id)
+                user_practice = UserPractice.objects.filter(user = user, practice_test = questions)
+
+                if user_practice:
+                    user_practice = user_practice.last()
+                    user_practice.is_challanged = is_challanged
+                    user_practice.save()
+                else:
+                    user_practice = UserPractice.objects.create(user = user, practice_test = questions, is_bookmarked = is_bookmark)
+                return Response({"response":"Challanged Updated Successfully."}, status.HTTP_200_OK)
+
+            else:
+                return Response({"error":"please provide question id"}, status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        except Exception as e:
+            print(e)
+            return Response({"error":"something went wrong"}, status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        try:
+            user = request.user
+            context = {"user_id": user.id}
+            user_practices = UserPractice.objects.filter(is_challanged = True, user = user)
+            practice_test = []
+            if user_practices:
+                for user_practice in user_practices:
+                    if user_practice.practice_test.question_type != "note":
+                        practice_test.append(user_practice.practice_test)
+            return Response({"response":PracticeTestSerializer(practice_test, context = context, many = True).data}, status.HTTP_200_OK)
+        
+        except Exception as e:
+            print(e)
+            return Response({"error":"something went wrong"}, status.HTTP_400_BAD_REQUEST)
+
