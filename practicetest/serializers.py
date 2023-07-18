@@ -8,6 +8,7 @@ class PracticeTestSerializer(ModelSerializer):
 	""" User Basic Information Serializer """
 	content = serializers.SerializerMethodField()
 	is_bookmarked = serializers.SerializerMethodField()
+	is_challanged = serializers.SerializerMethodField()
 
 	class Meta:
 		model = PracticeTest
