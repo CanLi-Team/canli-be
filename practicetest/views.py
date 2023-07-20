@@ -129,6 +129,7 @@ class FetchPracticeTestAPIView(APIView):
             print(e)
             return Response({"error":"something went wrong"}, status.HTTP_400_BAD_REQUEST)
 
+
 class FetchStaredNotesAPIView(APIView):
 	permission_classes = [IsAuthenticated]
 	serializer_classes = []
