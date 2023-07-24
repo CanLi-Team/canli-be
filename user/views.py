@@ -250,3 +250,17 @@ class AddTestDate(APIView):
             return Response({"response": "TestDate submitted successfully"}, status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"error": "something went wrong."}, status.HTTP_400_BAD_REQUEST)
+
+class ResetUserProgress(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_classes = []
+
+    def get(self, request):
+        try:
+            user = request.user
+            user_practice = UserPractice.objects.filter(user = user)
+            user_practice.delete()
+            return Response({"response":"Reset Successfully."}, status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"error":"something went wrong"}, status.HTTP_400_BAD_REQUEST)
